@@ -2,9 +2,8 @@ import React, { useCallback, useEffect } from "react"
 import "./App.css"
 import { TodolistsList } from "features/TodolistsList/TodolistsList"
 import { useSelector } from "react-redux"
-import { initializeAppTC } from "app/app.reducer"
 import { BrowserRouter, Route, Routes } from "react-router-dom"
-import { logoutTC } from "features/auth/model/auth.reducer"
+import { authAsyncActions } from "features/auth/model/auth.reducer"
 import {
   AppBar,
   Button,
@@ -13,7 +12,7 @@ import {
   IconButton,
   LinearProgress,
   Toolbar,
-  Typography,
+  Typography
 } from "@mui/material"
 import { Menu } from "@mui/icons-material"
 import { useAppDispatch } from "common/hooks/useAppDispatch"
@@ -34,11 +33,11 @@ function App({ demo = false }: PropsType) {
   const dispatch = useAppDispatch()
 
   useEffect(() => {
-    dispatch(initializeAppTC())
+    dispatch(authAsyncActions.initializeApp())
   }, [])
 
   const logoutHandler = useCallback(() => {
-    dispatch(logoutTC())
+    dispatch(authAsyncActions.logout())
   }, [])
 
   if (!isInitialized) {

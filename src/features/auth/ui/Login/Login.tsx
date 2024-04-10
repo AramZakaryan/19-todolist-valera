@@ -1,7 +1,7 @@
 import React from "react"
 import { useFormik } from "formik"
 import { useSelector } from "react-redux"
-import { loginTC } from "features/auth/model/auth.reducer"
+import { authAsyncActions } from "features/auth/model/auth.reducer"
 import { Navigate } from "react-router-dom"
 import { useAppDispatch } from "common/hooks/useAppDispatch"
 import {
@@ -12,7 +12,7 @@ import {
   FormGroup,
   FormLabel,
   Grid,
-  TextField,
+  TextField
 } from "@mui/material"
 import { selectIsLoggedIn } from "features/auth/model/auth.selectors"
 
@@ -25,23 +25,23 @@ export const Login = () => {
     validate: (values) => {
       if (!values.email) {
         return {
-          email: "Email is required",
+          email: "Email is required"
         }
       }
       if (!values.password) {
         return {
-          password: "Password is required",
+          password: "Password is required"
         }
       }
     },
     initialValues: {
       email: "",
       password: "",
-      rememberMe: false,
+      rememberMe: false
     },
     onSubmit: (values) => {
-      dispatch(loginTC(values))
-    },
+      dispatch(authAsyncActions.login(values))
+    }
   })
 
   if (isLoggedIn) {

@@ -1,10 +1,10 @@
 import {
   TaskType,
   todolistsApi,
-  UpdateTaskModelType,
+  UpdateTaskModelType
 } from "features/TodolistsList/Todolist/api/todolistsApi"
 import { appActions } from "app/app.reducer"
-import { todolistsActions } from "features/TodolistsList/todolists.reducer"
+import { todolistsActions, todolistsAsyncActions } from "features/TodolistsList/todolists.reducer"
 import { createSlice } from "@reduxjs/toolkit"
 import { clearTasksAndTodolists } from "common/actions/common.actions"
 import { createAppAsyncThunk, handleServerAppError, handleServerNetworkError } from "common/utils"
@@ -37,13 +37,13 @@ const slice = createSlice({
         const tasks = state[action.payload.task.todoListId]
         tasks.unshift(action.payload.task)
       })
-      .addCase(todolistsActions.addTodolist, (state, action) => {
+      .addCase(todolistsAsyncActions.addTodolistTC.fulfilled, (state, action) => {
         state[action.payload.todolist.id] = []
       })
-      .addCase(todolistsActions.removeTodolist, (state, action) => {
+      .addCase(todolistsAsyncActions.removeTodolist.fulfilled, (state, action) => {
         delete state[action.payload.id]
       })
-      .addCase(todolistsActions.setTodolists, (state, action) => {
+      .addCase(todolistsAsyncActions.fetchTodolists.fulfilled, (state, action) => {
         action.payload.todolists.forEach((tl) => {
           state[tl.id] = []
         })
@@ -51,7 +51,7 @@ const slice = createSlice({
       .addCase(clearTasksAndTodolists, () => {
         return {}
       })
-  },
+  }
 })
 
 export const tasksReducer = slice.reducer
@@ -135,7 +135,7 @@ export const updateTask = createAppAsyncThunk<CreateTaskType, CreateTaskType>(
       startDate: task.startDate,
       title: task.title,
       status: task.status,
-      ...arg.model,
+      ...arg.model
     }
 
     const res = await todolistsApi.updateTask(arg.todolistId, arg.taskId, apiModel)
@@ -151,14 +151,14 @@ export const updateTask = createAppAsyncThunk<CreateTaskType, CreateTaskType>(
       handleServerNetworkError(error, dispatch)
       return rejectWithValue(null)
     }
-  },
+  }
 )
 
 export const tasksThunks = {
   fetchTasks,
   addTask,
   removeTask,
-  updateTask,
+  updateTask
 }
 
 ////////// types
