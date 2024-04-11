@@ -58,7 +58,7 @@ test("correct todolist should be added", () => {
   }
 
   const endState = todolistsReducer(startState,
-    todolistsAsyncActions.addTodolistTC.fulfilled({ todolist },
+    todolistsAsyncActions.addTodolist.fulfilled({ todolist },
       "requestId",
       "any id"
     ))
@@ -71,7 +71,11 @@ test("correct todolist should be added", () => {
 test("correct todolist should change its name", () => {
   let newTodolistTitle = "New Todolist"
 
-  const action = todolistsActions.changeTodolistTitle({ id: todolistId2, title: newTodolistTitle })
+  const action = todolistsAsyncActions.changeTodolistTitle.fulfilled(
+    { id: todolistId2, title: newTodolistTitle },
+    "requestId",
+    { id: todolistId2, title: newTodolistTitle }
+  )
 
   const endState = todolistsReducer(startState, action)
 

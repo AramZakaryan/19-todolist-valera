@@ -17,7 +17,7 @@ test("ids should be equals", () => {
     order: 0
   }
 
-  const action = todolistsAsyncActions.addTodolistTC.fulfilled(
+  const action = todolistsAsyncActions.addTodolist.fulfilled(
     { todolist: todolist },
     "requestId",
     "any id"

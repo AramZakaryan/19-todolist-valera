@@ -8,14 +8,14 @@ import { LoginParamsType } from "features/auth/api/authApi.types"
 const slice = createSlice({
   name: "auth",
   initialState: {
-    isLoggedIn: false
+    isLoggedIn: false,
   },
   reducers: {
     setIsLoggedIn: (state, action: PayloadAction<{ isLoggedIn: boolean }>) => {
       state.isLoggedIn = action.payload.isLoggedIn
-    }
+    },
   },
-  extraReducers: builder => {
+  extraReducers: (builder) => {
     builder
       .addCase(login.fulfilled, (state, action) => {
         state.isLoggedIn = action.payload.isLoggedIn
@@ -26,7 +26,7 @@ const slice = createSlice({
       .addCase(initializeApp.fulfilled, (state, action) => {
         state.isLoggedIn = action.payload.isLoggedIn
       })
-  }
+  },
 })
 
 export const authReducer = slice.reducer
@@ -44,14 +44,17 @@ export const login = createAppAsyncThunk<{ isLoggedIn: boolean }, LoginParamsTyp
         dispatch(appActions.setAppStatus({ status: "succeeded" }))
         return { isLoggedIn: true }
       } else {
-        handleServerAppError(res.data, dispatch)
-        return rejectWithValue(null)
+        // if there are no errors in filed, show global error
+        const doesShowGlobalError = res.data.fieldsErrors.length === 0
+        handleServerAppError(res.data, dispatch, doesShowGlobalError)
+        return rejectWithValue(res.data)
       }
     } catch (error) {
       handleServerNetworkError(error, dispatch)
       return rejectWithValue(null)
     }
-  })
+  },
+)
 
 /** ZA: logout Thunk Creator */
 const logout = createAppAsyncThunk<{ isLoggedIn: boolean }, undefined>(
@@ -72,8 +75,8 @@ const logout = createAppAsyncThunk<{ isLoggedIn: boolean }, undefined>(
       handleServerNetworkError(error, dispatch)
       return rejectWithValue(null)
     }
-  })
-
+  },
+)
 
 /** ZA: initializeApp Thunk Creator */
 export const initializeApp = createAppAsyncThunk<{ isLoggedIn: boolean }, undefined>(
@@ -92,8 +95,7 @@ export const initializeApp = createAppAsyncThunk<{ isLoggedIn: boolean }, undefi
     } finally {
       dispatch(appActions.setAppInitialized({ isInitialized: true }))
     }
-
-  }
+  },
 )
 
 export const authAsyncActions = { login, logout, initializeApp }

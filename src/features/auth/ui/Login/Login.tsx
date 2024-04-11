@@ -12,9 +12,10 @@ import {
   FormGroup,
   FormLabel,
   Grid,
-  TextField
+  TextField,
 } from "@mui/material"
 import { selectIsLoggedIn } from "features/auth/model/auth.selectors"
+import { BaseResponseType } from "common/types"
 
 export const Login = () => {
   const dispatch = useAppDispatch()
@@ -23,25 +24,30 @@ export const Login = () => {
 
   const formik = useFormik({
     validate: (values) => {
-      if (!values.email) {
-        return {
-          email: "Email is required"
-        }
-      }
-      if (!values.password) {
-        return {
-          password: "Password is required"
-        }
-      }
+      // if (!values.email) {
+      //   return {
+      //     email: "Email is required"
+      //   }
+      // }
+      // if (!values.password) {
+      //   return {
+      //     password: "Password is required"
+      //   }
+      // }
     },
     initialValues: {
       email: "",
       password: "",
-      rememberMe: false
+      rememberMe: false,
     },
-    onSubmit: (values) => {
+    onSubmit: (values, formikHelpers) => {
       dispatch(authAsyncActions.login(values))
-    }
+        .unwrap()
+        .then((res) => {})
+        .catch((err: BaseResponseType) => {
+          err.fieldsErrors?.forEach((e) => formikHelpers.setFieldError(e.field, e.error))
+        })
+    },
   })
 
   if (isLoggedIn) {

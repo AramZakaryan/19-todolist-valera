@@ -181,7 +181,7 @@ test("title of specified task should be changed", () => {
 })
 
 test("new array should be added when new todolist is added", () => {
-  const action = todolistsAsyncActions.addTodolistTC.fulfilled({
+  const action = todolistsAsyncActions.addTodolist.fulfilled({
       todolist: {
         id: "blabla",
         title: "new todolist",
