@@ -68,32 +68,29 @@ export const todolistsActions = slice.actions
 ////////// THUNKS
 
 /** ZA: fetchTodolists Thunk Creator */
-const fetchTodolists = createAppAsyncThunk<
-  {
-    todolists: TodolistType[]
+const fetchTodolists = createAppAsyncThunk<{ todolists: TodolistType[] }, undefined>(
+  `${slice.name}/fetchTodolists`,
+  async (_, thunkAPI) => {
+    const logic = async () => {
+      let res = await todolistsApi.getTodolists()
+      return { todolists: res.data }
+    }
+    return thunkTryCatch(thunkAPI, logic)
   },
-  undefined
->(`${slice.name}/fetchTodolists`, async (_, { dispatch, rejectWithValue }) => {
-  dispatch(appActions.setAppStatus({ status: "loading" }))
-  try {
-    let res = await todolistsApi.getTodolists()
-    dispatch(appActions.setAppStatus({ status: "succeeded" }))
-    return { todolists: res.data }
-  } catch (error) {
-    handleServerNetworkError(error, dispatch)
-    return rejectWithValue(null)
-  }
-})
+)
 
 /** ZA: removeTodolist Thunk Creator */
 const removeTodolist = createAppAsyncThunk<{ id: string }, string>(
   `${slice.name}/removeTodolist`,
-  async (id, { dispatch }) => {
-    dispatch(appActions.setAppStatus({ status: "loading" }))
-    dispatch(todolistsActions.changeTodolistEntityStatus({ id, entityStatus: "loading" }))
-    await todolistsApi.deleteTodolist(id)
-    dispatch(appActions.setAppStatus({ status: "succeeded" }))
-    return { id }
+  async (id, thunkAPI) => {
+    const logic = async () => {
+      thunkAPI.dispatch(
+        todolistsActions.changeTodolistEntityStatus({ id, entityStatus: "loading" }),
+      )
+      await todolistsApi.deleteTodolist(id)
+      return { id }
+    }
+    return thunkTryCatch(thunkAPI, logic)
   },
 )
 
@@ -113,9 +110,12 @@ const addTodolist = createAppAsyncThunk<{ todolist: TodolistType }, string>(
 const changeTodolistTitle = createAppAsyncThunk<
   { id: string; title: string },
   { id: string; title: string }
->(`${slice.name}/changeTodolistTitle`, async ({ id, title }) => {
-  await todolistsApi.updateTodolist(id, title)
-  return { id, title }
+>(`${slice.name}/changeTodolistTitle`, async ({ id, title }, thunkAPI) => {
+  const logic = async () => {
+    await todolistsApi.updateTodolist(id, title)
+    return { id, title }
+  }
+  return thunkTryCatch(thunkAPI, logic)
 })
 
 export const todolistsAsyncActions = {

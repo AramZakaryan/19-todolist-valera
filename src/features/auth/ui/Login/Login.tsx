@@ -3,7 +3,7 @@ import { useFormik } from "formik"
 import { useSelector } from "react-redux"
 import { authAsyncActions } from "features/auth/model/auth.reducer"
 import { Navigate } from "react-router-dom"
-import { useAppDispatch } from "common/hooks/useAppDispatch"
+import { useAppDispatch } from "common/hooks"
 import {
   Button,
   Checkbox,

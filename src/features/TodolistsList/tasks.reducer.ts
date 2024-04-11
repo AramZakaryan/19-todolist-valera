@@ -67,45 +67,37 @@ export const tasksActions = slice.actions
 
 ////////// THUNKS
 
-/** ZA: fetchTasks Thunk Creator
- */
+/** ZA: fetchTasks Thunk Creator */
 export const fetchTasks = createAppAsyncThunk<
   { tasks: Array<TaskType>; todolistId: string },
   string
 >(`${slice.name}/fetchTasks`, async (todolistId, thunkAPI) => {
-  const { dispatch, rejectWithValue } = thunkAPI
-  dispatch(appActions.setAppStatus({ status: "loading" }))
-  try {
+  const logic = async () => {
     let res = await todolistsApi.getTasks(todolistId)
     const tasks = res.data.items
-    dispatch(appActions.setAppStatus({ status: "succeeded" }))
     return { tasks, todolistId }
-  } catch (error) {
-    console.log(error)
-    handleServerNetworkError(error, dispatch)
-    return rejectWithValue(null)
   }
+  return thunkTryCatch(thunkAPI, logic)
 })
 
-/** ZA: removeTask Thunk Creator
- */
+/** ZA: removeTask Thunk Creator */
 export const removeTask = createAppAsyncThunk<
   { taskId: string; todolistId: string },
   { taskId: string; todolistId: string }
 >(`${slice.name}/removeTask`, async ({ taskId, todolistId }, thunkAPI) => {
-  await todolistsApi.deleteTask(todolistId, taskId)
-  const { dispatch } = thunkAPI
-  return { taskId, todolistId }
+  const logic = async () => {
+    await todolistsApi.deleteTask(todolistId, taskId)
+    return { taskId, todolistId }
+  }
+  return thunkTryCatch(thunkAPI, logic)
 })
 
-/** ZA: addTask Thunk Creator
- */
+/** ZA: addTask Thunk Creator */
 export const addTask = createAppAsyncThunk<
   { task: TaskType },
   { title: string; todolistId: string }
 >(`${slice.name}/addTask`, async ({ title, todolistId }, thunkAPI) => {
   const { dispatch, rejectWithValue } = thunkAPI
-
   const logic = async () => {
     let res = await todolistsApi.createTask(todolistId, title)
     if (res.data.resultCode === ResultCode.success) {
@@ -116,12 +108,10 @@ export const addTask = createAppAsyncThunk<
       return rejectWithValue(null)
     }
   }
-
   return thunkTryCatch(thunkAPI, logic)
 })
 
-/** ZA: updateTask Thunk Creator
- */
+/** ZA: updateTask Thunk Creator */
 export const updateTask = createAppAsyncThunk<CreateTaskType, CreateTaskType>(
   `${slice.name}/updateTask`,
   async (arg, thunkAPI) => {
@@ -145,7 +135,8 @@ export const updateTask = createAppAsyncThunk<CreateTaskType, CreateTaskType>(
     }
 
     const res = await todolistsApi.updateTask(arg.todolistId, arg.taskId, apiModel)
-    try {
+
+    const logic = async () => {
       if (res.data.resultCode === ResultCode.success) {
         return { taskId: arg.taskId, model: arg.model, todolistId: arg.todolistId }
         // dispatch(tasksActions.updateTask({ taskId, model: domainModel, todolistId }))
@@ -153,10 +144,9 @@ export const updateTask = createAppAsyncThunk<CreateTaskType, CreateTaskType>(
         handleServerAppError(res.data, dispatch)
         return rejectWithValue(null)
       }
-    } catch (error) {
-      handleServerNetworkError(error, dispatch)
-      return rejectWithValue(null)
     }
+
+    return thunkTryCatch(thunkAPI, logic)
   },
 )
 

@@ -12,14 +12,15 @@ import {
   IconButton,
   LinearProgress,
   Toolbar,
-  Typography
+  Typography,
 } from "@mui/material"
 import { Menu } from "@mui/icons-material"
-import { useAppDispatch } from "common/hooks/useAppDispatch"
+import { useActions, useAppDispatch } from "common/hooks"
 import { selectIsLoggedIn } from "features/auth/model/auth.selectors"
 import { selectAppStatus, selectIsInitialized } from "app/app.selectors"
 import { ErrorSnackbar } from "common/components"
 import { Login } from "features/auth/ui/Login"
+import { bindActionCreators } from "@reduxjs/toolkit"
 
 type PropsType = {
   demo?: boolean
@@ -32,8 +33,11 @@ function App({ demo = false }: PropsType) {
 
   const dispatch = useAppDispatch()
 
+  const {} = useActions(authAsyncActions)
+
   useEffect(() => {
-    dispatch(authAsyncActions.initializeApp())
+    bindActionCreators(authAsyncActions.initializeApp, dispatch)()
+    // dispatch(authAsyncActions.initializeApp())
   }, [])
 
   const logoutHandler = useCallback(() => {

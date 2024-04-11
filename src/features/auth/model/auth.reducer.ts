@@ -1,4 +1,9 @@
-import { createAppAsyncThunk, handleServerAppError, handleServerNetworkError } from "common/utils"
+import {
+  createAppAsyncThunk,
+  handleServerAppError,
+  handleServerNetworkError,
+  thunkTryCatch,
+} from "common/utils"
 import { createSlice, PayloadAction } from "@reduxjs/toolkit"
 import { appActions } from "app/app.reducer"
 import { clearTasksAndTodolists } from "common/actions/common.actions"
@@ -81,20 +86,19 @@ const logout = createAppAsyncThunk<{ isLoggedIn: boolean }, undefined>(
 /** ZA: initializeApp Thunk Creator */
 export const initializeApp = createAppAsyncThunk<{ isLoggedIn: boolean }, undefined>(
   `${slice.name}/initializeApp`,
-  async (_, { dispatch, rejectWithValue }) => {
-    try {
+  async (_, thunkAPI) => {
+    const logic = async () => {
       const res = await authAPI.me()
       if (res.data.resultCode === 0) {
         return { isLoggedIn: true }
       } else {
-        return rejectWithValue(null)
+        handleServerAppError(res.data, thunkAPI.dispatch, false)
+        return thunkAPI.rejectWithValue(null)
       }
-    } catch (error) {
-      handleServerNetworkError(error, dispatch)
-      return rejectWithValue(null)
-    } finally {
-      dispatch(appActions.setAppInitialized({ isInitialized: true }))
     }
+    return thunkTryCatch(thunkAPI, logic).finally(() =>
+      thunkAPI.dispatch(appActions.setAppInitialized({ isInitialized: true })),
+    )
   },
 )
 
