@@ -150,7 +150,7 @@ export const updateTask = createAppAsyncThunk<CreateTaskType, CreateTaskType>(
   },
 )
 
-export const tasksThunks = {
+export const tasksAsyncActions = {
   fetchTasks,
   addTask,
   removeTask,

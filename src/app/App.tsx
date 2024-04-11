@@ -31,17 +31,18 @@ function App({ demo = false }: PropsType) {
   const isInitialized = useSelector(selectIsInitialized)
   const isLoggedIn = useSelector(selectIsLoggedIn)
 
-  const dispatch = useAppDispatch()
+  // const dispatch = useAppDispatch()
 
-  const {} = useActions(authAsyncActions)
+  const { initializeApp, logout } = useActions(authAsyncActions)
 
   useEffect(() => {
-    bindActionCreators(authAsyncActions.initializeApp, dispatch)()
+    initializeApp()
     // dispatch(authAsyncActions.initializeApp())
   }, [])
 
   const logoutHandler = useCallback(() => {
-    dispatch(authAsyncActions.logout())
+    logout()
+    // dispatch(authAsyncActions.logout())
   }, [])
 
   if (!isInitialized) {
